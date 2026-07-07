@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "bibtidy"
+version = "0.0.0"
+description = "Offline-first BibTeX manager: parser, canonical writer, validation. The .bib file is the only source of truth."
+authors = ["mapuys <maxime.puys@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+packages = [{ include = "bibtidy" }]
+
+[tool.poetry.dependencies]
+python = "^3.14"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+pytest-cov = "^6.0"
+pylint = "^3.3"
+ty = "^0.0.1a5"
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=bibtidy --cov-report=term-missing --cov-branch"
+
+[tool.coverage.run]
+branch = true
+source = ["bibtidy"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pylint.main]
+py-version = "3.14"
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint."messages control"]
+# We favour compact, well-documented modules; a few defaults are noise for a
+# small, deliberate codebase.
+disable = [
+    "too-few-public-methods",
+    # The top-level package and core subpackage deliberately re-export the same
+    # public names, so their __all__ blocks are identical by design.
+    "duplicate-code",
+]
+
+[tool.ty.environment]
+python-version = "3.14"
