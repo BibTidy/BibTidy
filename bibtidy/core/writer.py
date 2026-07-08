@@ -14,6 +14,7 @@ The output is a fixed point of the parser: ``write(parse(write(x)))`` equals
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
 from .model import Entry, Library
@@ -70,19 +71,27 @@ def _formatEntry(entry: Entry) -> str:
     return "\n".join(lines)
 
 
-def toString(library: Library) -> str:
+def toString(library: Library, order: Iterable[Entry] | None = None) -> str:
     """Return the whole library as canonical BibTeX text.
 
-    Entries are sorted by citation key (ties broken by entry type, so ordering
-    is total and stable even when keys collide).
+    Entries are sorted by citation key by default (ties broken by entry type).
+    If ``order`` is given, entries are written in that sequence instead.
     """
-    entries = sorted(library, key=lambda e: (e.key, e.entryType))
+    if order is None:
+        entries = sorted(library, key=lambda e: (e.key, e.entryType))
+    else:
+        entries = list(order)
     blocks = [_formatEntry(entry) for entry in entries]
     if not blocks:
         return ""
     return "\n\n".join(blocks) + "\n"
 
 
-def writeFile(library: Library, path: str | Path) -> None:
-    """Write the library to ``path`` as canonical UTF-8 BibTeX."""
-    Path(path).write_text(toString(library), encoding="utf-8")
+def writeFile(
+    library: Library, path: str | Path, order: Iterable[Entry] | None = None
+) -> None:
+    """Write the library to ``path`` as canonical UTF-8 BibTeX.
+
+    If ``order`` is given, entries are written in that sequence.
+    """
+    Path(path).write_text(toString(library, order), encoding="utf-8")

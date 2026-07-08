@@ -2,7 +2,7 @@
 name = "bibtidy"
 version = "0.0.0"
 description = "Offline-first BibTeX manager: parser, canonical writer, validation. The .bib file is the only source of truth."
-authors = ["mapuys <maxime.puys@gmail.com>"]
+authors = ["Maxime Puys <drakes00@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 packages = [{ include = "bibtidy" }]
@@ -36,6 +36,27 @@ py-version = "3.14"
 
 [tool.pylint.format]
 max-line-length = 100
+
+# Naming convention: camelCase (this codebase is camelCase, not snake_case).
+# `poetry run pylint bibtidy` reads pyproject.toml, NOT .github/workflows/pylintrc,
+# so the regexes must live here to be enforced locally. Single-quoted TOML literal
+# strings keep regex backslashes verbatim. Mirrors .github/workflows/pylintrc.
+[tool.pylint.basic]
+variable-rgx = '(([a-z][a-zA-Z0-9]{2,30})|(_[a-zA-Z0-9]*))$'
+argument-rgx = '(([a-z][a-zA-Z0-9]{2,30})|(_[a-zA-Z0-9]*))$'
+attr-rgx = '(([a-z][a-zA-Z0-9]{2,30})|(_[a-zA-Z0-9]*))$'
+function-rgx = '_?(test_(\d+)_)?[a-z]+((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$'
+method-rgx = '(([a-z][a-zA-Z0-9]{2,30})|(_[a-zA-Z0-9]*)|(__[a-zA-Z0-9]{2,30}__))$'
+const-rgx = '(([A-Z_][A-Z0-9_]*)|(__.*__))$'
+good-names = ["i", "j", "k", "n", "e", "me"]
+bad-names = ["foo", "bar", "baz", "toto", "tutu", "tata"]
+
+[tool.pylint.classes]
+min-public-methods = 0
+
+[tool.pylint.design]
+max-args = 12
+max-attributes = 20
 
 [tool.pylint."messages control"]
 # We favour compact, well-documented modules; a few defaults are noise for a
