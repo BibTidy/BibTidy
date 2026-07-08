@@ -14,21 +14,21 @@ from collections.abc import Iterator
 class Entry:
     """A single BibTeX entry: a type, a citation key, and ordered fields.
 
-    ``entry_type`` and field names are normalised to lower case so that lookups
+    ``entryType`` and field names are normalised to lower case so that lookups
     and comparisons are case-insensitive (BibTeX itself is). Field *values* are
     preserved as parsed. Field insertion order is kept; the canonical writer is
     responsible for re-ordering on output.
     """
 
-    __slots__ = ("entry_type", "key", "fields")
+    __slots__ = ("entryType", "key", "fields")
 
     def __init__(
         self,
-        entry_type: str,
+        entryType: str,
         key: str,
         fields: dict[str, str] | None = None,
     ) -> None:
-        self.entry_type: str = entry_type.lower()
+        self.entryType: str = entryType.lower()
         self.key: str = key
         self.fields: dict[str, str] = {}
         if fields:
@@ -47,20 +47,20 @@ class Entry:
         if not isinstance(other, Entry):
             return NotImplemented
         return (
-            self.entry_type == other.entry_type
+            self.entryType == other.entryType
             and self.key == other.key
             and self.fields == other.fields
         )
 
     def __repr__(self) -> str:
-        return f"Entry(type={self.entry_type!r}, key={self.key!r}, fields={self.fields!r})"
+        return f"Entry(type={self.entryType!r}, key={self.key!r}, fields={self.fields!r})"
 
 
 class Library:
     """An ordered collection of :class:`Entry` objects.
 
     Duplicate citation keys are permitted at this stage (real de-duplication is a
-    later milestone); :meth:`duplicate_keys` surfaces any collisions.
+    later milestone); :meth:`duplicateKeys` surfaces any collisions.
     """
 
     __slots__ = ("entries",)
@@ -90,7 +90,7 @@ class Library:
         """Return the citation keys in insertion order (duplicates included)."""
         return [entry.key for entry in self.entries]
 
-    def duplicate_keys(self) -> list[str]:
+    def duplicateKeys(self) -> list[str]:
         """Return citation keys that appear more than once, in first-seen order."""
         seen: set[str] = set()
         dupes: dict[str, None] = {}

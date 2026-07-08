@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from bibtidy import Entry, Library, parse_string, validate, validate_entry
+from bibtidy import Entry, Library, parseString, validate, validateEntry
 from bibtidy.core.validation import MISSING_REQUIRED, UNKNOWN_TYPE
 
 
@@ -12,12 +12,12 @@ def test_complete_article_is_valid() -> None:
         "k",
         {"author": "A", "title": "T", "journal": "J", "year": "2020"},
     )
-    assert validate_entry(entry) == []
+    assert validateEntry(entry) == []
 
 
 def test_missing_required_reported() -> None:
     entry = Entry("article", "k", {"author": "A", "title": "T"})
-    issues = validate_entry(entry)
+    issues = validateEntry(entry)
     assert len(issues) == 1
     issue = issues[0]
     assert issue.kind == MISSING_REQUIRED
@@ -34,34 +34,34 @@ def test_alternative_field_satisfies_requirement() -> None:
         "k",
         {"author": "A", "title": "T", "journaltitle": "J", "date": "2020"},
     )
-    assert validate_entry(entry) == []
+    assert validateEntry(entry) == []
 
 
 def test_author_or_editor_alternative() -> None:
     book = Entry("book", "k", {"editor": "E", "title": "T", "publisher": "P", "year": "1"})
-    assert validate_entry(book) == []
+    assert validateEntry(book) == []
 
 
 def test_empty_field_does_not_satisfy() -> None:
     entry = Entry("article", "k", {"author": "A", "title": "T", "journal": "  ", "year": "2020"})
-    issues = validate_entry(entry)
+    issues = validateEntry(entry)
     assert len(issues) == 1
     assert any("journaltitle" in group or "journal" in group for group in issues[0].missing)
 
 
 def test_unknown_type() -> None:
     entry = Entry("blogpost", "k", {"title": "T"})
-    issues = validate_entry(entry)
+    issues = validateEntry(entry)
     assert len(issues) == 1
     assert issues[0].kind == UNKNOWN_TYPE
 
 
 def test_misc_has_no_required_fields() -> None:
-    assert validate_entry(Entry("misc", "k", {})) == []
+    assert validateEntry(Entry("misc", "k", {})) == []
 
 
 def test_validate_library_in_order() -> None:
-    lib = parse_string(
+    lib = parseString(
         "@article{good, author={A}, title={T}, journal={J}, year={2020}}"
         "@article{bad, title={T}}"
     )

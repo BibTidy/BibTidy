@@ -56,33 +56,33 @@ _PRIORITY_INDEX: dict[str, int] = {name: i for i, name in enumerate(_FIELD_PRIOR
 INDENT = "  "
 
 
-def _field_sort_key(name: str) -> tuple[int, str]:
+def _fieldSortKey(name: str) -> tuple[int, str]:
     """Priority-listed fields first (in list order), then the rest alphabetically."""
     return (_PRIORITY_INDEX.get(name, len(_FIELD_PRIORITY)), name)
 
 
-def _format_entry(entry: Entry) -> str:
+def _formatEntry(entry: Entry) -> str:
     """Render a single entry in canonical form."""
-    lines = [f"@{entry.entry_type}{{{entry.key},"]
-    for name in sorted(entry.fields, key=_field_sort_key):
+    lines = [f"@{entry.entryType}{{{entry.key},"]
+    for name in sorted(entry.fields, key=_fieldSortKey):
         lines.append(f"{INDENT}{name} = {{{entry.fields[name]}}},")
     lines.append("}")
     return "\n".join(lines)
 
 
-def to_string(library: Library) -> str:
+def toString(library: Library) -> str:
     """Return the whole library as canonical BibTeX text.
 
     Entries are sorted by citation key (ties broken by entry type, so ordering
     is total and stable even when keys collide).
     """
-    entries = sorted(library, key=lambda e: (e.key, e.entry_type))
-    blocks = [_format_entry(entry) for entry in entries]
+    entries = sorted(library, key=lambda e: (e.key, e.entryType))
+    blocks = [_formatEntry(entry) for entry in entries]
     if not blocks:
         return ""
     return "\n\n".join(blocks) + "\n"
 
 
-def write_file(library: Library, path: str | Path) -> None:
+def writeFile(library: Library, path: str | Path) -> None:
     """Write the library to ``path`` as canonical UTF-8 BibTeX."""
-    Path(path).write_text(to_string(library), encoding="utf-8")
+    Path(path).write_text(toString(library), encoding="utf-8")

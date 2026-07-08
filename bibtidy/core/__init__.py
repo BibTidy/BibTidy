@@ -7,18 +7,18 @@ the (future) CLI and GUI layers wrap.
 from __future__ import annotations
 
 from .model import Entry, Library
-from .parser import parse_file, parse_string
-from .validation import ValidationIssue, validate, validate_entry
-from .writer import to_string, write_file
+from .parser import parseFile, parseString
+from .validation import ValidationIssue, validate, validateEntry
+from .writer import toString, writeFile
 
 __all__ = [
     "Entry",
     "Library",
-    "parse_string",
-    "parse_file",
-    "to_string",
-    "write_file",
+    "parseString",
+    "parseFile",
+    "toString",
+    "writeFile",
     "validate",
-    "validate_entry",
+    "validateEntry",
     "ValidationIssue",
 ]

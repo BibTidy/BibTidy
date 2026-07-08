@@ -28,7 +28,7 @@ _SKIPPED_BLOCKS = frozenset({"string", "preamble", "comment"})
 _WHITESPACE_RUN = re.compile(r"\s+")
 
 
-def _normalise_value(raw: str) -> str:
+def _normaliseValue(raw: str) -> str:
     """Collapse whitespace runs to single spaces and strip the ends."""
     return _WHITESPACE_RUN.sub(" ", raw).strip()
 
@@ -41,12 +41,12 @@ class _Scanner:
         self.i = 0
         self.n = len(text)
 
-    def skip_whitespace(self) -> None:
+    def skipWhitespace(self) -> None:
         """Advance the cursor past any run of whitespace."""
         while self.i < self.n and self.text[self.i].isspace():
             self.i += 1
 
-    def read_delimited(self, close: str) -> str:
+    def readDelimited(self, close: str) -> str:
         """Read a ``{...}`` or ``"..."`` value; ``self.i`` sits just past the open.
 
         Brace depth is tracked (so a ``"`` inside braces does not close a quoted
@@ -81,7 +81,7 @@ class _Scanner:
         # Unterminated value: return whatever we captured.
         return self.text[start:self.i]
 
-    def read_bare(self) -> str:
+    def readBare(self) -> str:
         """Read an unquoted value (number or macro token) up to ``,`` or ``}``."""
         start = self.i
         while self.i < self.n and self.text[self.i] not in ",}":
@@ -89,11 +89,11 @@ class _Scanner:
         return self.text[start:self.i]
 
 
-def _parse_entry_body(scanner: _Scanner, entry: Entry) -> None:
+def _parseEntryBody(scanner: _Scanner, entry: Entry) -> None:
     """Parse ``field = value`` pairs until the entry's closing brace."""
     text = scanner.text
     while scanner.i < scanner.n:
-        scanner.skip_whitespace()
+        scanner.skipWhitespace()
         if scanner.i >= scanner.n:
             break
         char = text[scanner.i]
@@ -106,75 +106,75 @@ def _parse_entry_body(scanner: _Scanner, entry: Entry) -> None:
 
         # Read the field name up to '='. If there is no '=' before the entry
         # ends, the entry is malformed from here on — stop.
-        eq = text.find("=", scanner.i)
+        eqPos = text.find("=", scanner.i)
         end = text.find("}", scanner.i)
-        if eq == -1 or (end != -1 and end < eq):
+        if eqPos == -1 or (end != -1 and end < eqPos):
             scanner.i = end + 1 if end != -1 else scanner.n
             return
-        name = text[scanner.i:eq].strip()
-        scanner.i = eq + 1
-        scanner.skip_whitespace()
+        name = text[scanner.i:eqPos].strip()
+        scanner.i = eqPos + 1
+        scanner.skipWhitespace()
 
         if scanner.i >= scanner.n:
             break
         delim = text[scanner.i]
         if delim == "{":
             scanner.i += 1
-            raw = scanner.read_delimited("}")
+            raw = scanner.readDelimited("}")
         elif delim == '"':
             scanner.i += 1
-            raw = scanner.read_delimited('"')
+            raw = scanner.readDelimited('"')
         else:
-            raw = scanner.read_bare()
+            raw = scanner.readBare()
 
         if name:
-            entry.set(name, _normalise_value(raw))
+            entry.set(name, _normaliseValue(raw))
 
 
-def parse_string(text: str) -> Library:
+def parseString(text: str) -> Library:
     """Parse BibTeX ``text`` into a :class:`Library`."""
     scanner = _Scanner(text)
     library = Library()
 
     while True:
-        at = text.find("@", scanner.i)
-        if at == -1:
+        atPos = text.find("@", scanner.i)
+        if atPos == -1:
             break
-        scanner.i = at + 1
+        scanner.i = atPos + 1
 
         # Entry / block type: a run of letters immediately after '@'.
         start = scanner.i
         while scanner.i < scanner.n and text[scanner.i].isalpha():
             scanner.i += 1
-        entry_type = text[start:scanner.i].lower()
-        if not entry_type:
+        entryType = text[start:scanner.i].lower()
+        if not entryType:
             continue
 
-        scanner.skip_whitespace()
+        scanner.skipWhitespace()
         if scanner.i >= scanner.n or text[scanner.i] != "{":
             continue  # a stray '@' — resume scanning
         scanner.i += 1  # consume the opening brace
 
-        if entry_type in _SKIPPED_BLOCKS:
-            scanner.read_delimited("}")
+        if entryType in _SKIPPED_BLOCKS:
+            scanner.readDelimited("}")
             continue
 
         # Citation key: everything up to the first ',' (or the brace for a
         # field-less entry).
-        scanner.skip_whitespace()
-        key_start = scanner.i
+        scanner.skipWhitespace()
+        keyStart = scanner.i
         while scanner.i < scanner.n and text[scanner.i] not in ",} \t\r\n":
             scanner.i += 1
-        key = text[key_start:scanner.i].strip()
+        key = text[keyStart:scanner.i].strip()
         if not key:
             continue
 
-        entry = Entry(entry_type, key)
+        entry = Entry(entryType, key)
 
-        scanner.skip_whitespace()
+        scanner.skipWhitespace()
         if scanner.i < scanner.n and text[scanner.i] == ",":
             scanner.i += 1
-            _parse_entry_body(scanner, entry)
+            _parseEntryBody(scanner, entry)
         elif scanner.i < scanner.n and text[scanner.i] == "}":
             scanner.i += 1  # field-less entry, e.g. @misc{key}
 
@@ -183,7 +183,7 @@ def parse_string(text: str) -> Library:
     return library
 
 
-def parse_file(path: str | Path) -> Library:
+def parseFile(path: str | Path) -> Library:
     """Read a UTF-8 ``.bib`` file and parse it into a :class:`Library`."""
     text = Path(path).read_text(encoding="utf-8")
-    return parse_string(text)
+    return parseString(text)

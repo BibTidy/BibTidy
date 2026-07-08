@@ -51,6 +51,6 @@ REQUIRED_FIELDS: dict[str, tuple[Requirement, ...]] = {
 }
 
 
-def is_known_type(entry_type: str) -> bool:
-    """Return whether ``entry_type`` (case-insensitive) is in the type table."""
-    return entry_type.lower() in REQUIRED_FIELDS
+def isKnownType(entryType: str) -> bool:
+    """Return whether ``entryType`` (case-insensitive) is in the type table."""
+    return entryType.lower() in REQUIRED_FIELDS

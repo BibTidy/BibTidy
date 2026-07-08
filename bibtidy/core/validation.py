@@ -22,31 +22,31 @@ class ValidationIssue:
     """
 
     key: str
-    entry_type: str
+    entryType: str
     kind: str
     missing: tuple[Requirement, ...] = field(default=())
 
     def __str__(self) -> str:
         if self.kind == UNKNOWN_TYPE:
-            return f"{self.key} (@{self.entry_type}): unknown entry type"
+            return f"{self.key} (@{self.entryType}): unknown entry type"
         wants = ", ".join(" | ".join(group) for group in self.missing)
-        return f"{self.key} (@{self.entry_type}): missing required field(s): {wants}"
+        return f"{self.key} (@{self.entryType}): missing required field(s): {wants}"
 
 
-def _is_satisfied(entry: Entry, group: Requirement) -> bool:
+def _isSatisfied(entry: Entry, group: Requirement) -> bool:
     """A requirement group is met if any alternative is present and non-empty."""
     return any((entry.get(name) or "").strip() for name in group)
 
 
-def validate_entry(entry: Entry) -> list[ValidationIssue]:
+def validateEntry(entry: Entry) -> list[ValidationIssue]:
     """Return the issues for a single entry (empty list if it is valid)."""
-    requirements = REQUIRED_FIELDS.get(entry.entry_type)
+    requirements = REQUIRED_FIELDS.get(entry.entryType)
     if requirements is None:
-        return [ValidationIssue(entry.key, entry.entry_type, UNKNOWN_TYPE)]
+        return [ValidationIssue(entry.key, entry.entryType, UNKNOWN_TYPE)]
 
-    missing = tuple(g for g in requirements if not _is_satisfied(entry, g))
+    missing = tuple(g for g in requirements if not _isSatisfied(entry, g))
     if missing:
-        return [ValidationIssue(entry.key, entry.entry_type, MISSING_REQUIRED, missing)]
+        return [ValidationIssue(entry.key, entry.entryType, MISSING_REQUIRED, missing)]
     return []
 
 
@@ -54,5 +54,5 @@ def validate(library: Library) -> list[ValidationIssue]:
     """Return all validation issues across the library, in entry order."""
     issues: list[ValidationIssue] = []
     for entry in library:
-        issues.extend(validate_entry(entry))
+        issues.extend(validateEntry(entry))
     return issues

@@ -121,7 +121,7 @@ Ordered so the core library — parsing and canonical writing — lands first an
 before anything is built on top of it. Each milestone should be shippable/testable on
 its own before starting the next.
 
-### M0 — Core library MVP (parser + canonical writer)
+### M0 — Core library MVP (parser + canonical writer) ✅
 - Starting point: the field-parsing approach in
   `~/Documents/perso/cv/cv/formatters/bibtexFormatter.py` (brace-counting value
   extraction, quote/brace handling, escape handling) — ported into `bibtidy/core` and
@@ -180,3 +180,25 @@ its own before starting the next.
 - Python version floor, GitHub Actions workflow details.
 - Single-binary packaging approach (PyInstaller vs Nuitka) — decide once GUI work
   starts.
+
+---
+
+*Last updated: initial implementation.*
+
+| Feature | Status | Notes |
+|---|---|---|
+| **Parsing** — braces/quotes, nested braces, escapes, numeric values | ✅ Done | `bibtidy/core/parser.py` |
+| **Data model** — `Entry`, `Library` | ✅ Done | `bibtidy/core/model.py` |
+| **Canonical writer** — braces-only, fixed field order, key-sorted, idempotent | ✅ Done | `bibtidy/core/writer.py` |
+| **Validation** — BibLaTeX-style required fields per entry type | ✅ Done | `bibtidy/core/validation.py`, `bibtidy/core/entry_types.py` |
+| **Test suite** — pytest + coverage | ✅ Done | `tests/` |
+| **CI** — GitHub Actions lint/type-check/tests | ✅ Done | `.github/workflows/` |
+| **Key generation** — `[auth][year]` + disambiguation | 🔲 Todo | M1 |
+| **Sorting** — standalone operation | 🔲 Todo | M1 |
+| **Search** — metadata query syntax | 🔲 Todo | M1 |
+| **Tags & collections** — custom fields, group-by | 🔲 Todo | M1 |
+| **Merge** — combine multiple `.bib` files | 🔲 Todo | M1 |
+| **Dedup** — DOI + fuzzy title matching | 🔲 Todo | M3 (algorithm TBD) |
+| **CLI** — Typer app | 🔲 Todo | M2 |
+| **GUI** — Flet app | 🔲 Todo | M4 |
+| **Packaging** — PyPI release, single-binary | 🔲 Todo | M5 |

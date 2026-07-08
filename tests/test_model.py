@@ -31,5 +31,5 @@ def test_library_get_and_len_and_iter() -> None:
 
 def test_duplicate_keys() -> None:
     lib = Library([Entry("misc", "a"), Entry("misc", "a"), Entry("misc", "b")])
-    assert lib.duplicate_keys() == ["a"]
-    assert Library([Entry("misc", "x")]).duplicate_keys() == []
+    assert lib.duplicateKeys() == ["a"]
+    assert Library([Entry("misc", "x")]).duplicateKeys() == []

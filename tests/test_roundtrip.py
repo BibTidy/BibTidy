@@ -7,27 +7,27 @@ parser/writer pair.
 
 from __future__ import annotations
 
-from bibtidy import parse_file, parse_string, to_string
+from bibtidy import parseFile, parseString, toString
 
 
 def _canonical(text: str) -> str:
-    return to_string(parse_string(text))
+    return toString(parseString(text))
 
 
 def test_write_is_idempotent_on_fixtures(fixture_bib) -> None:
-    first = to_string(parse_file(fixture_bib))
-    second = to_string(parse_string(first))
+    first = toString(parseFile(fixture_bib))
+    second = toString(parseString(first))
     assert first == second
 
 
 def test_roundtrip_preserves_entries(fixture_bib) -> None:
-    lib1 = parse_file(fixture_bib)
-    lib2 = parse_string(to_string(lib1))
+    lib1 = parseFile(fixture_bib)
+    lib2 = parseString(toString(lib1))
     assert sorted(lib1.keys()) == sorted(lib2.keys())
     for entry in lib1:
         twin = lib2.get(entry.key)
         assert twin is not None
-        assert twin.entry_type == entry.entry_type
+        assert twin.entryType == entry.entryType
         assert twin.fields == entry.fields
 
 
